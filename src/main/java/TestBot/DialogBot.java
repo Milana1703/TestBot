@@ -42,6 +42,7 @@ public class DialogBot extends TelegramLongPollingBot {
                     case "/help" -> message.setText(DialogCommandResponses.HelpCommand());
                     case "/start" -> message.setText(DialogCommandResponses.StartCommand());
                     case "/anecdote" -> message.setText(DialogCommandResponses.AnecdoteCommand());
+                    default -> message.setText("Я не знаю такой команды \uD83E\uDD7A");
                 }
             } else {
                 message.setText(received_message.getText());
