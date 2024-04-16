@@ -41,10 +41,9 @@ public class dialogCommandResponses //extends DialogResponses
 //        pass;
 //    }
     public String TranslateCommand(String language, String text){
-        //String language = "ru";
-
         return YandexTranslate.translate(language, text);
     }
+
     public String AnecdoteCommand()
     {
         return "Работники дорожных служб клали асфальт, один дорожник упал, теперь он внедорожник ;)";

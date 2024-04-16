@@ -4,8 +4,12 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -68,11 +72,32 @@ public class DialogBot extends TelegramLongPollingBot {
                 }
             }
 
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            replyKeyboardMarkup.setResizeKeyboard(true);  // подгоняем размер кнопочек
+            replyKeyboardMarkup.setOneTimeKeyboard(true);  // не скрываем после использования
+
+            //Создаем список с рядами кнопок
+            ArrayList<KeyboardRow> keyboardRows = new ArrayList<>();
+            //Создаем один ряд кнопок и добавляем его в список
+            KeyboardRow keyboardRow = new KeyboardRow();
+            keyboardRows.add(keyboardRow);
+            //Добавляем одну кнопку с текстом "Просвяти" наш ряд
+            keyboardRow.add(new KeyboardButton("/start"));
+            keyboardRow.add(new KeyboardButton("/help"));
+            keyboardRow.add(new KeyboardButton("/anecdote"));
+            keyboardRow.add(new KeyboardButton("/translate"));
+            keyboardRow.add(new KeyboardButton("/language"));
+            keyboardRow.add(new KeyboardButton("/stop"));
+            //добавляем лист с одним рядом кнопок в главный объект
+            replyKeyboardMarkup.setKeyboard(keyboardRows);
+            message.setReplyMarkup(replyKeyboardMarkup);
+
             try {  // Отправляем объект-сообщение пользователю
                 execute(message);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
         }
+
     }
 }

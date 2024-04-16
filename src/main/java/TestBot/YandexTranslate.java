@@ -46,9 +46,6 @@ public class YandexTranslate {
 
         OutputStream outputStream = null;
         BufferedReader bufferedReader = null;
-//        if (text == null) {
-//            return "Увы.. Вы остались без переводы :с";
-//        }
         String[] texts = text.split(" ");
 
         StringBuilder response = new StringBuilder();
