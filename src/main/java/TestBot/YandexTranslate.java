@@ -37,11 +37,11 @@ public class YandexTranslate {
      * @param text - текст, который требуется перевести
      * @return Возвращает переведённую строку (на русском) заданного текста
      */
-    private static String translate(String text) {
+    public static String translate(String language, String text) {
         String urlAddress = "https://translate.api.cloud.yandex.net/translate/v2/translate";
         final String iAmToken = System.getenv("iAmToken");
         final String folderId = System.getenv("folderId");
-        String targetLanguage = "ru";          // target - цель
+        String targetLanguage = language;          // target - цель
         // String[] texts = {"Hello", "I am working!"};
 
         OutputStream outputStream = null;
@@ -101,7 +101,7 @@ public class YandexTranslate {
         return getTranslateText(response);
     }
 
-    public static void main(String[] args) {
-        System.out.println(translate("Melanin"));
-    }
+//    public static void main(String[] args) {
+//        System.out.println(translate("Melanin"));
+//    }
 }
