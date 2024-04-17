@@ -52,15 +52,23 @@ public class DialogBot extends TelegramLongPollingBot {
                 switch (received_message.getText()) {
                     case "/help" -> message.setText(dialogCommandResponse.HelpCommand());
                     case "/start" -> message.setText(dialogCommandResponse.StartCommand());
-                    case "/translate" -> idTranslateMode.put(chat_id, "ru");
+                    case "/translate" -> {
+                        idTranslateMode.put(chat_id, "ru");
+                        message.setText("Включен режим переводчика EN-RU");
+                    }
                     case "/language" -> {
                         if (idTranslateMode.get(chat_id).equals("ru")){
                             idTranslateMode.put(chat_id, "en");
+                            message.setText("Язык перевода изменен: RU-EN");
                         } else {
                             idTranslateMode.put(chat_id, "ru");
+                            message.setText("Язык перевода изменен: EN-RU");
                         }
                     }
-                    case "/stop" -> idTranslateMode.remove(chat_id);
+                    case "/stop" -> {
+                        idTranslateMode.remove(chat_id);
+                        message.setText("Вы вышли из режима переводчика");
+                    }
                     case "/anecdote" -> message.setText(dialogCommandResponse.AnecdoteCommand());
                     default -> message.setText("Я не знаю такой команды \uD83E\uDD7A");
                 }
@@ -72,22 +80,30 @@ public class DialogBot extends TelegramLongPollingBot {
                 }
             }
 
+
             ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
             replyKeyboardMarkup.setResizeKeyboard(true);  // подгоняем размер кнопочек
-            replyKeyboardMarkup.setOneTimeKeyboard(true);  // не скрываем после использования
+            replyKeyboardMarkup.setOneTimeKeyboard(true);  // оставляем кнопочки после их нажатия
 
-            //Создаем список с рядами кнопок
+            // список с рядами кнопочек
             ArrayList<KeyboardRow> keyboardRows = new ArrayList<>();
-            //Создаем один ряд кнопок и добавляем его в список
-            KeyboardRow keyboardRow = new KeyboardRow();
-            keyboardRows.add(keyboardRow);
-            //Добавляем одну кнопку с текстом "Просвяти" наш ряд
-            keyboardRow.add(new KeyboardButton("/start"));
-            keyboardRow.add(new KeyboardButton("/help"));
-            keyboardRow.add(new KeyboardButton("/anecdote"));
-            keyboardRow.add(new KeyboardButton("/translate"));
-            keyboardRow.add(new KeyboardButton("/language"));
-            keyboardRow.add(new KeyboardButton("/stop"));
+
+            // ряд кнопочек
+            KeyboardRow keyboardRow1 = new KeyboardRow();
+            keyboardRows.add(keyboardRow1);
+            keyboardRow1.add(new KeyboardButton("/start"));
+            keyboardRow1.add(new KeyboardButton("/help"));
+
+            KeyboardRow keyboardRow2 = new KeyboardRow();
+            keyboardRows.add(keyboardRow2);
+            keyboardRow2.add(new KeyboardButton("/translate"));
+            keyboardRow2.add(new KeyboardButton("/language"));
+            keyboardRow2.add(new KeyboardButton("/stop"));
+
+            KeyboardRow keyboardRow3 = new KeyboardRow();
+            keyboardRows.add(keyboardRow3);
+            keyboardRow3.add(new KeyboardButton("/anecdote"));
+
             //добавляем лист с одним рядом кнопок в главный объект
             replyKeyboardMarkup.setKeyboard(keyboardRows);
             message.setReplyMarkup(replyKeyboardMarkup);
