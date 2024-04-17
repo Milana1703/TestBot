@@ -8,16 +8,15 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
     //  run -> edit configuration -> application -> telegram bot
 
 public class Main{
-
     public static void main(String[] args) {
 
-//        System.out.println(DialogBot.botName);
-//        System.out.println(DialogBot.botToken);
+        // System.out.println(DialogBot.botName); gh
+        // System.out.println(DialogBot.botToken);
 
-        TelegramBotsApi telegramBotsApi = null;
+        TelegramBotsApi telegramBotsApi;
         try {  // пробуем зарегестрировать бота
             telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-            telegramBotsApi.registerBot(new DialogBot()); // botName, botToken
+            telegramBotsApi.registerBot(new DialogBot());  // botName, botToken
             System.out.println("Bot started! \uD83D\uDD25");
         } catch (TelegramApiException exc)        {
             throw new RuntimeException(exc);

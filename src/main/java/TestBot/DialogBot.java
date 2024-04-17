@@ -21,7 +21,6 @@ public class DialogBot extends TelegramLongPollingBot {
     public static final String botName = System.getenv("botName");
     public static final String botToken = System.getenv("botToken");
     HashMap<String, String> idTranslateMode = new HashMap<>();
-    dialogCommandResponses dialogCommandResponse = new dialogCommandResponses();
 
     @Override
     public String getBotUsername() {
@@ -44,14 +43,27 @@ public class DialogBot extends TelegramLongPollingBot {
             SendMessage message = new SendMessage(); // Создаем обект-сообщение
             message.setChatId(chat_id);              // Передаем чат id пользователя
 
-            // HashMap<String, String> idTranslateMode = new HashMap<>();
-            // String language = "ru";
-
             // Проверяем появление нового сообщения в чате, и если это текст
             if (received_message.isCommand()) {
                 switch (received_message.getText()) {
-                    case "/help" -> message.setText(dialogCommandResponse.HelpCommand());
-                    case "/start" -> message.setText(dialogCommandResponse.StartCommand());
+                    case "/help" -> message.setText(
+                                   """
+                                    Вот, чему меня пока что научили :\s
+                                    /start – вывод стартового сообщение\s
+                                    /help – демонстрирация списка доступных для взаимодействия с ботом команд\s
+                                    /translate – включение режима простого переводчика\s
+                                    /language – смена языка перевода (RU-EN)\s
+                                    /stop – выход из режима переводчика\s
+                                    /anecdote – шутение смешнявки\s
+                                   """);
+                    case "/start" -> message.setText(
+                                   """
+                                    Привет \uD83C\uDF1A\s
+                                       Я telegram-бот, люди создали меня, чтобы я помогал им в изучении английского языка\s
+                                       Я появился совсем недавно и еще немногому успел научиться.. но мои создатели каждый день стараются сделать меня лучше)\s
+                                       С помощью команды /help ты можешь ознакомиться со всем доступным функционалом и узнать как со мной взаимодействовать :з\s
+                                       Надеюсь, я буду полезен для тебя \uD83D\uDC49\uD83C\uDFFC\uD83D\uDC48\uD83C\uDFFC
+                                   """);
                     case "/translate" -> {
                         idTranslateMode.put(chat_id, "ru");
                         message.setText("Включен режим переводчика EN-RU");
@@ -69,12 +81,12 @@ public class DialogBot extends TelegramLongPollingBot {
                         idTranslateMode.remove(chat_id);
                         message.setText("Вы вышли из режима переводчика");
                     }
-                    case "/anecdote" -> message.setText(dialogCommandResponse.AnecdoteCommand());
+                    case "/anecdote" -> message.setText("Работники дорожных служб клали асфальт, один дорожник упал, теперь он внедорожник ;)");
                     default -> message.setText("Я не знаю такой команды \uD83E\uDD7A");
                 }
             } else {
                 if (idTranslateMode.containsKey(chat_id)) {
-                    message.setText(dialogCommandResponse.TranslateCommand(idTranslateMode.get(chat_id), received_message.getText()));
+                    message.setText(YandexTranslate.translate(idTranslateMode.get(chat_id), received_message.getText()));
                 } else {
                     message.setText(received_message.getText());
                 }
