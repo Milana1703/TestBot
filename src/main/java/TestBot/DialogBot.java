@@ -1,16 +1,15 @@
 package TestBot;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
+
 import java.util.HashMap;
+
 
 /**
  * Расширение класса <code>TelegramLongPollingBot</code>
@@ -24,31 +23,53 @@ public class DialogBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        // геттер имени бота
         return botName;
     }
     @Override
     public String getBotToken() {
-        // геттер токена бота
         return botToken;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        // Проверяем появление нового сообщения в чате, и если это текст
-        if (update.hasMessage() && update.getMessage().hasText()) {
 
-            Message received_message = update.getMessage();            // Создаем переменную равную тексту присланного сообщения
-            String chat_id = update.getMessage().getChatId().toString();    // Создаем переменную равную id чата присланного сообщения
-            SendMessage message = new SendMessage(); // Создаем обект-сообщение
-            message.setChatId(chat_id);              // Передаем чат id пользователя
+        CallbackQuery callback = update.getCallbackQuery();
+        System.out.print("hasCallbackQuery: " + update.hasCallbackQuery());
+        System.out.print(callback + "\n");
 
+
+        if (update.hasCallbackQuery()){
+
+            String callback_id = update.getCallbackQuery().getMessage().getChatId().toString();
+
+            SendMessage message = new SendMessage();   // Создаем обект-сообщение
+            message.setChatId(callback_id);            // Передаем чат id пользователя
+
+            System.out.print("callback_id: " + callback.getMessage().getChatId());
+
+            try {
+                execute(RulesGuide.DB(message));
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else if (update.hasMessage() && update.getMessage().hasText()) {
             // Проверяем появление нового сообщения в чате, и если это текст
+
+            Message received_message = update.getMessage();
+            String message_text = received_message.getText();     // Создаем переменную равную тексту присланного сообщения
+            String chat_id = received_message.getChatId().toString();     // Создаем переменную равную id чата присланного сообщения
+
+            SendMessage message = new SendMessage();    // Создаем обект-сообщение
+            message.setChatId(chat_id);                 // Передаем чат id пользователя
+
+            // Проверяем появление нового сообщения в чате, и если это /command
             if (received_message.isCommand()) {
-                switch (received_message.getText()) {
+                switch (message_text) {
                     case "/help" -> message.setText(
                                    """
                                     Вот, чему меня пока что научили :\s
+                                    Rules - переход в раздел с правилами грамматики английского языка\s
                                     /start – вывод стартового сообщение\s
                                     /help – демонстрирация списка доступных для взаимодействия с ботом команд\s
                                     /translate – включение режима простого переводчика\s
@@ -64,6 +85,7 @@ public class DialogBot extends TelegramLongPollingBot {
                                        С помощью команды /help ты можешь ознакомиться со всем доступным функционалом и узнать как со мной взаимодействовать :з\s
                                        Надеюсь, я буду полезен для тебя \uD83D\uDC49\uD83C\uDFFC\uD83D\uDC48\uD83C\uDFFC
                                    """);
+
                     case "/translate" -> {
                         idTranslateMode.put(chat_id, "ru");
                         message.setText("Включен режим переводчика EN-RU");
@@ -84,48 +106,38 @@ public class DialogBot extends TelegramLongPollingBot {
                     case "/anecdote" -> message.setText("Работники дорожных служб клали асфальт, один дорожник упал, теперь он внедорожник ;)");
                     default -> message.setText("Я не знаю такой команды \uD83E\uDD7A");
                 }
-            } else {
-                if (idTranslateMode.containsKey(chat_id)) {
-                    message.setText(YandexTranslate.translate(idTranslateMode.get(chat_id), received_message.getText()));
-                } else {
-                    message.setText(received_message.getText());
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
                 }
-            }
-
-
-            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-            replyKeyboardMarkup.setResizeKeyboard(true);  // подгоняем размер кнопочек
-            replyKeyboardMarkup.setOneTimeKeyboard(true);  // оставляем кнопочки после их нажатия
-
-            // список с рядами кнопочек
-            ArrayList<KeyboardRow> keyboardRows = new ArrayList<>();
-
-            // ряд кнопочек
-            KeyboardRow keyboardRow1 = new KeyboardRow();
-            keyboardRows.add(keyboardRow1);
-            keyboardRow1.add(new KeyboardButton("/start"));
-            keyboardRow1.add(new KeyboardButton("/help"));
-
-            KeyboardRow keyboardRow2 = new KeyboardRow();
-            keyboardRows.add(keyboardRow2);
-            keyboardRow2.add(new KeyboardButton("/translate"));
-            keyboardRow2.add(new KeyboardButton("/language"));
-            keyboardRow2.add(new KeyboardButton("/stop"));
-
-            KeyboardRow keyboardRow3 = new KeyboardRow();
-            keyboardRows.add(keyboardRow3);
-            keyboardRow3.add(new KeyboardButton("/anecdote"));
-
-            //добавляем лист с одним рядом кнопок в главный объект
-            replyKeyboardMarkup.setKeyboard(keyboardRows);
-            message.setReplyMarkup(replyKeyboardMarkup);
-
-            try {  // Отправляем объект-сообщение пользователю
-                execute(message);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            } // если НЕ command, а text
+            else {
+                if (message_text.equals("Rules")) {
+                    try {
+                    // то отправляем пользователю соответствующую встроенную клавиатуру
+                        execute(RulesGuide.rulesInlineKeyboard(chat_id));
+                    } catch (TelegramApiException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.print("chat_id: " + chat_id + "\n");
+                    System.out.print("КоллбэкКвори : " + update.getCallbackQuery() + "\n");
+                } else {
+                    // переводчик
+                    if (idTranslateMode.containsKey(chat_id)) {
+                        message.setText(YandexTranslate.translate(idTranslateMode.get(chat_id), received_message.getText()));
+                    } else {
+                        message.setText(received_message.getText());   // эхо-бот
+                    }
+                    try {
+                        execute(message);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } // кнопотьки
+            Buttons.buttonsReplyKeyboard(message);
+            // Чтобы отправить ответ определенному CallbackQuery, вам просто нужно знать его id
         }
-
     }
 }
