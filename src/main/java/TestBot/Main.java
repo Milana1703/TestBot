@@ -4,15 +4,11 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-    //  переменные окружения :
-    //  run -> edit configuration -> application -> telegram bot
+//  переменные окружения :
+//  run -> edit configuration -> application -> telegram bot
 
 public class Main{
     public static void main(String[] args) {
-
-        // System.out.println(DialogBot.botName); gh
-        // System.out.println(DialogBot.botToken);
-
         TelegramBotsApi telegramBotsApi;
         try {  // пробуем зарегестрировать бота
             telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
