@@ -14,8 +14,22 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Класс, предназначенный для корректного использования и обработки ответов на запросы Yandex Translate API.
+ *  Атрибуты
+ *  --------
+ *  String text:
+ *     Текст, который необходимо перевести.
+ *  Медоты
+ *  ------
+ *  private static String getTranslateText(StringBuilder t)
+ *  public static String translate(String language, String text)
+ *
+ */
 
 public class YandexTranslate {
+
+    // регулярные выражения – недостаточно сложный инструмент для понимания конструкций, используемых в HTML
     private static final String REGEX = "text\"\s*:\s*\"([^\"]+)";
 
     /**
@@ -34,15 +48,14 @@ public class YandexTranslate {
 
     /**
      * метод предназначенный для перевода теста
+     * @param languageTo - язык, НА который требуется перевести текст
      * @param text - текст, который требуется перевести
      * @return Возвращает переведённую строку (на русском) заданного текста
      */
-    public static String translate(String language, String text) {
+    public static String translate(String languageTo, String text) {
         String urlAddress = "https://translate.api.cloud.yandex.net/translate/v2/translate";
         final String iAmToken = System.getenv("iAmToken");
         final String folderId = System.getenv("folderId");
-        String targetLanguage = language;          // target - цель
-        // String[] texts = {"Hello", "I am working!"};
 
         OutputStream outputStream = null;
         BufferedReader bufferedReader = null;
@@ -50,7 +63,7 @@ public class YandexTranslate {
 
         StringBuilder response = new StringBuilder();
         JsonObject body = new JsonObject();
-        body.addProperty("targetLanguageCode", targetLanguage);
+        body.addProperty("targetLanguageCode", languageTo);
         JsonArray textsArray = new JsonArray();
         for (String t : texts) {
             textsArray.add(t);
@@ -77,7 +90,6 @@ public class YandexTranslate {
                 while ((inputLine = bufferedReader.readLine()) != null) {
                     response.append(inputLine);
                 }
-
             } else {
                 System.out.println("HTTP response code: " + responseCode);
             }
@@ -97,8 +109,4 @@ public class YandexTranslate {
         }
         return getTranslateText(response);
     }
-
-//    public static void main(String[] args) {
-//        System.out.println(translate("Melanin"));
-//    }
 }
