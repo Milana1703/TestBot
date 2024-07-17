@@ -34,21 +34,21 @@ public class DialogBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
 
         CallbackQuery callback = update.getCallbackQuery();
-        System.out.print("hasCallbackQuery: " + update.hasCallbackQuery());
+        System.out.print("hasCallbackQuery: " + update.hasCallbackQuery() + "\n");
         System.out.print(callback + "\n");
-
 
         if (update.hasCallbackQuery()){
 
-            String callback_id = update.getCallbackQuery().getMessage().getChatId().toString();
+            String callback_id = callback.getMessage().getChatId().toString();
+            String callback_data = callback.getData();
 
             SendMessage message = new SendMessage();   // Создаем обект-сообщение
             message.setChatId(callback_id);            // Передаем чат id пользователя
 
-            System.out.print("callback_id: " + callback.getMessage().getChatId());
+            System.out.print("callback_id: " + callback_id + "\n");
 
             try {
-                execute(RulesGuide.DB(message));
+                execute(RulesGuide.DB(message, callback_data));
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
             }
@@ -68,14 +68,18 @@ public class DialogBot extends TelegramLongPollingBot {
                 switch (message_text) {
                     case "/help" -> message.setText(
                                    """
-                                    Вот, чему меня пока что научили :\s
-                                    Rules - переход в раздел с правилами грамматики английского языка\s
+                                    Команды взаимодействия со мной :\s
+                                    \s
                                     /start – вывод стартового сообщение\s
                                     /help – демонстрирация списка доступных для взаимодействия с ботом команд\s
                                     /translate – включение режима простого переводчика\s
                                     /language – смена языка перевода (RU-EN)\s
                                     /stop – выход из режима переводчика\s
                                     /anecdote – шутение смешнявки\s
+                                    \s
+                                    И вот, чему меня пока что научили :\s
+                                    \s
+                                    Rules – переход в раздел с правилами грамматики английского языка\s
                                    """);
                     case "/start" -> message.setText(
                                    """
