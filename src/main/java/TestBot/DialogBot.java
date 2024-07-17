@@ -120,7 +120,7 @@ public class DialogBot extends TelegramLongPollingBot {
                 if (message_text.equals("Rules")) {
                     try {
                     // то отправляем пользователю соответствующую встроенную клавиатуру
-                        execute(RulesGuide.rulesInlineKeyboard(chat_id));
+                        execute(Buttons.rulesInlineKeyboard(chat_id));
                     } catch (TelegramApiException e) {
                         throw new RuntimeException(e);
                     }
