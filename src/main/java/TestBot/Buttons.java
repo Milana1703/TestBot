@@ -102,6 +102,12 @@ public class Buttons {
         inlineButton10.setText("Future Perfect");
         inlineButton10.setCallbackData("futurePerfect");
 
+        List<InlineKeyboardButton> inlineRow5 = new ArrayList<>();
+
+        InlineKeyboardButton inlineButton11 = new InlineKeyboardButton();
+        inlineButton11.setText("Неправильные глаголы");
+        inlineButton11.setCallbackData("irregularVerbs");
+
         // добавляем кнопки в первый ряд в том порядке, какой нам необходим.
 
         inlineRow1.add(inlineButton1);
@@ -118,9 +124,11 @@ public class Buttons {
         inlineRow4.add(inlineButton9);
         inlineRow4.add(inlineButton10);
 
+        inlineRow5.add(inlineButton11);
+
         // адрес Интернет страницы устанавливается через setUrl(String s)
 
-        List<InlineKeyboardButton> inlineRow5 = new ArrayList<>();
+        List<InlineKeyboardButton> inlineRow6 = new ArrayList<>();
         InlineKeyboardButton inlineButtonImage = new InlineKeyboardButton();
 
         inlineButtonImage.setText("Остальные правила");
@@ -128,7 +136,7 @@ public class Buttons {
         inlineButtonImage.setUrl("https://avatars.mds.yandex.net/i?id=880f7d3eda3b1cec1d6afe485af65cd7ea02b442-5233241-images-thumbs&n=13");
 
         inlineButtonImage.setCallbackData("Image");
-        inlineRow5.add(inlineButtonImage);
+        inlineRow6.add(inlineButtonImage);
 
         // настраиваем разметку всей клавиатуры
 
@@ -136,9 +144,8 @@ public class Buttons {
         rowsInline.add(inlineRow2);
         rowsInline.add(inlineRow3);
         rowsInline.add(inlineRow4);
-        rowsInline.add(inlineRow5);
-        // ...
-        // rowsInline.add(rowInline10);
+        //rowsInline.add(inlineRow5);
+        rowsInline.add(inlineRow6);
 
         // добавляем встроенную клавиатуру в сообщение
         markupInline.setKeyboard(rowsInline);

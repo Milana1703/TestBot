@@ -29,51 +29,75 @@ public class Connect {
         return connect_object;
     }
 
-    public static String readTable(Connection connection, String tName, Boolean exc) {
-    // Statement — базовый класс, предназначеный для выполнения простых SQL-запросов без параметров
+    public static String readTable(Connection connection, String tName, Integer columnNumber) {
+        // Statement — базовый класс, предназначеный для выполнения простых SQL-запросов без параметров
         Statement statement;
         ResultSet rs;    // ResultSet обеспечивает построчный доступ к результатам запросов
 
-        StringBuilder ruleText = new StringBuilder("Правило :\n\n");
+        StringBuilder text = new StringBuilder();
 
-        try {
-            statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
-            String query = "SELECT CAST(columnOne AS text), CAST(columnTwo AS text), CAST(columnThree AS text), "
-                    + "CAST(columnFour AS text) FROM " + tName + "Exc" + ";";
-            rs = statement.executeQuery(query);
+        switch (columnNumber) {
+            case 2 -> {
+                try {
+                    statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
+                    String query = "SELECT CAST(columnOne AS text), CAST(columnTwo AS text) FROM " + tName + ";";
+                    rs = statement.executeQuery(query);
 
-            while (rs.next()) {
-                ruleText.append(rs.getString("columnOne")).append("\n");
-                ruleText.append(rs.getString("columnTwo")).append("\n");
-                ruleText.append(rs.getString("columnThree")).append("\n");
-                ruleText.append(rs.getString("columnFour")).append("\n").append("\n");
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        StringBuilder excText = new StringBuilder();
-
-        if (exc){
-
-            excText = new StringBuilder("\nИсключения :\n\n");
-
-            try {
-                statement = connection.createStatement();
-                String query = "SELECT CAST(columnOne AS text), CAST(columnTwo AS text), CAST(columnThree AS text), "
-                        + "CAST(columnFour AS text) FROM " + tName + "Exc" + ";";
-                rs = statement.executeQuery(query);
-
-                while (rs.next()) {
-                    excText.append(rs.getString("columnOne")).append("\n");
-                    excText.append(rs.getString("columnTwo")).append("\n");
-                    excText.append(rs.getString("columnThree")).append("\n");
-                    excText.append(rs.getString("columnFour")).append("\n").append("\n");
+                    while (rs.next()) {
+                        text.append(rs.getString("columnOne")).append("\n");
+                        text.append(rs.getString("columnTwo")).append("\n").append("\n");
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            }
+            case 3 -> {
+                try {
+                    statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
+                    String query = "SELECT CAST(columnOne AS text), CAST(columnTwo AS text), CAST(columnThree AS text) "
+                            + "FROM " + tName + ";";
+                    rs = statement.executeQuery(query);
+
+                    while (rs.next()) {
+                        text.append(rs.getString("columnOne")).append("\n");
+                        text.append(rs.getString("columnTwo")).append("\n");
+                        text.append(rs.getString("columnThree")).append("\n").append("\n");
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            case 4 -> {
+                try {
+                    statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
+                    String query = "SELECT CAST(columnOne AS text), CAST(columnTwo AS text), CAST(columnThree AS text), "
+                            + "CAST(columnFour AS text) FROM " + tName + ";";
+                    rs = statement.executeQuery(query);
+
+                    while (rs.next()) {
+                        text.append(rs.getString("columnOne")).append("\n");
+                        text.append(rs.getString("columnTwo")).append("\n");
+                        text.append(rs.getString("columnThree")).append("\n");
+                        text.append(rs.getString("columnFour")).append("\n").append("\n");
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            default -> {
+                try {
+                    statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
+                    String query = "SELECT CAST(columnOne AS text) FROM " + tName + ";";
+                    rs = statement.executeQuery(query);
+
+                    while (rs.next()) {
+                        text.append(rs.getString("columnOne")).append("\n").append("\n");
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
         }
-        return ruleText + excText.toString();
+        return text.toString();
     }
 }

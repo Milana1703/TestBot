@@ -37,12 +37,17 @@ public class DialogBot extends TelegramLongPollingBot {
         System.out.print("hasCallbackQuery: " + update.hasCallbackQuery() + "\n");
         System.out.print(callback + "\n");
 
+        SendMessage message = new SendMessage();   // Создаем обект-сообщение
+
+        // кнопотьки
+        Buttons.buttonsReplyKeyboard(message);
+
         if (update.hasCallbackQuery()){
 
             String callback_id = callback.getMessage().getChatId().toString();
             String callback_data = callback.getData();
 
-            SendMessage message = new SendMessage();   // Создаем обект-сообщение
+            //SendMessage message = new SendMessage();   // Создаем обект-сообщение
             message.setChatId(callback_id);            // Передаем чат id пользователя
 
             System.out.print("callback_id: " + callback_id + "\n");
@@ -60,7 +65,7 @@ public class DialogBot extends TelegramLongPollingBot {
             String message_text = received_message.getText();     // Создаем переменную равную тексту присланного сообщения
             String chat_id = received_message.getChatId().toString();     // Создаем переменную равную id чата присланного сообщения
 
-            SendMessage message = new SendMessage();    // Создаем обект-сообщение
+            //SendMessage message = new SendMessage();    // Создаем обект-сообщение
             message.setChatId(chat_id);                 // Передаем чат id пользователя
 
             // Проверяем появление нового сообщения в чате, и если это /command
@@ -139,9 +144,7 @@ public class DialogBot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                 }
-            } // кнопотьки
-            Buttons.buttonsReplyKeyboard(message);
-            // Чтобы отправить ответ определенному CallbackQuery, вам просто нужно знать его id
+            }
         }
     }
 }
