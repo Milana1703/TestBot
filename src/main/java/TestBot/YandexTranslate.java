@@ -1,13 +1,13 @@
 package TestBot;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.BufferedReader;
@@ -28,22 +28,20 @@ import java.nio.charset.StandardCharsets;
  */
 
 public class YandexTranslate {
-
-    // регулярные выражения – недостаточно сложный инструмент для понимания конструкций, используемых в HTML
-    private static final String REGEX = "text\"\s*:\s*\"([^\"]+)";
+    private static final Gson gson = new Gson();
 
     /**
      * Данный метод предназначен для получения значения из поля "text":
      * при получении результата
      */
     private static String getTranslateText(StringBuilder t) {
-        StringBuilder sb = new StringBuilder();
-        Pattern pattern = Pattern.compile(REGEX);
-        Matcher matcher = pattern.matcher(t);
-        while (matcher.find()) {
-            sb.append(matcher.group(1)).append(" ");
+        YandexAPIResponse response = gson.fromJson(t.toString(), YandexAPIResponse.class);
+        List<YandexAPIResponse.Translation> translations = response.getTranslations();
+        StringBuilder resultText = new StringBuilder();
+        for (YandexAPIResponse.Translation translation : translations) {
+            resultText.append(translation.getText()).append(" ");
         }
-        return sb.toString();
+        return resultText.deleteCharAt(resultText.length() - 1).toString();
     }
 
     /**
