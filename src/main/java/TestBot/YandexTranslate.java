@@ -27,12 +27,16 @@ import java.nio.charset.StandardCharsets;
  */
 
 public class YandexTranslate {
-    private static final Gson gson = new Gson();
+    private final Gson gson;
+
+    public YandexTranslate(Gson gson) {
+        this.gson = gson;
+    }
 
     /**
      * Получение значения из поля "text" при получении результата
      */
-    private static String getTranslateText(StringBuilder t) {
+    private String getTranslateText(StringBuilder t) {
         YandexAPIResponse response = gson.fromJson(t.toString(), YandexAPIResponse.class);
         List<Translation> translations = response.getTranslations();
         StringBuilder resultText = new StringBuilder();
@@ -48,7 +52,7 @@ public class YandexTranslate {
      * @param text - текст, который требуется перевести
      * @return Возвращает переведённую строку (на русском) заданного текста
      */
-    public static String translate(String languageTo, String text) {
+    public String translate(String languageTo, String text) {
         String urlAddress = "https://translate.api.cloud.yandex.net/translate/v2/translate";
         final String iAmToken = System.getenv("iAmToken");
         final String folderId = System.getenv("folderId");
@@ -72,16 +76,17 @@ public class YandexTranslate {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Authorization", "Bearer " + iAmToken);
 
-            try (OutputStream outputStream = connection.getOutputStream();
-                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            try (OutputStream outputStream = connection.getOutputStream()) {
                 byte[] input = body.toString().getBytes(StandardCharsets.UTF_8);
                 outputStream.write(input, 0, input.length);
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    String inputLine;
-                    while ((inputLine = bufferedReader.readLine()) != null) {
-                        response.append(inputLine);
+                    try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                        String inputLine;
+                        while ((inputLine = bufferedReader.readLine()) != null) {
+                            response.append(inputLine);
+                        }
                     }
                 } else {
                     System.out.println("HTTP response code: " + responseCode);

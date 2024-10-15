@@ -17,9 +17,15 @@ import java.util.HashMap;
  */
 
 public class DialogBot extends TelegramLongPollingBot {
-    public static final String botName = System.getenv("botName");
-    public static final String botToken = System.getenv("botToken");
-    HashMap<String, String> idTranslateMode = new HashMap<>();
+    public final String botName = System.getenv("botName");
+    public final String botToken = System.getenv("botToken");
+    private final YandexTranslate translator;
+    private final HashMap<String, String> idTranslateMode;
+
+    public DialogBot(YandexTranslate translator, HashMap<String, String> idTranslateMode) {
+        this.translator = translator;
+        this.idTranslateMode = idTranslateMode;
+    }
 
     @Override
     public String getBotUsername() {
@@ -134,7 +140,7 @@ public class DialogBot extends TelegramLongPollingBot {
                 } else {
                     // переводчик
                     if (idTranslateMode.containsKey(chat_id)) {
-                        message.setText(YandexTranslate.translate(idTranslateMode.get(chat_id), received_message.getText()));
+                        message.setText(translator.translate(idTranslateMode.get(chat_id), received_message.getText()));
                     } else {
                         message.setText(received_message.getText());   // эхо-бот
                     }
