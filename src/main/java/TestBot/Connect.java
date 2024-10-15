@@ -1,9 +1,6 @@
 package TestBot;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.*;
 
 public class Connect {
     public static Connection connectToDB() {
@@ -31,7 +28,7 @@ public class Connect {
 
     public static String readTable(Connection connection, String tName, Integer columnNumber) {
         // Statement — базовый класс, предназначеный для выполнения простых SQL-запросов без параметров
-        Statement statement;
+        PreparedStatement statement;
         ResultSet rs;    // ResultSet обеспечивает построчный доступ к результатам запросов
 
         StringBuilder text = new StringBuilder();
@@ -39,9 +36,13 @@ public class Connect {
         switch (columnNumber) {
             case 2 -> {
                 try {
-                    statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
-                    String query = "SELECT CAST(columnOne AS text), CAST(columnTwo AS text) FROM " + tName + ";";
-                    rs = statement.executeQuery(query);
+                    String query = String.format("""
+                            SELECT CAST(columnOne AS text),
+                                   CAST(columnTwo AS text)
+                            FROM %s;
+                            """, tName);
+                    statement = connection.prepareStatement(query);
+                    rs = statement.executeQuery();
 
                     while (rs.next()) {
                         text.append(rs.getString("columnOne")).append("\n");
@@ -53,10 +54,14 @@ public class Connect {
             }
             case 3 -> {
                 try {
-                    statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
-                    String query = "SELECT CAST(columnOne AS text), CAST(columnTwo AS text), CAST(columnThree AS text) "
-                            + "FROM " + tName + ";";
-                    rs = statement.executeQuery(query);
+                    String query = String.format("""
+                            SELECT CAST(columnOne AS text),
+                                   CAST(columnTwo AS text),
+                                   CAST(columnThree AS text)
+                            FROM %s;
+                            """, tName);
+                    statement = connection.prepareStatement(query);
+                    rs = statement.executeQuery();
 
                     while (rs.next()) {
                         text.append(rs.getString("columnOne")).append("\n");
@@ -69,10 +74,15 @@ public class Connect {
             }
             case 4 -> {
                 try {
-                    statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
-                    String query = "SELECT CAST(columnOne AS text), CAST(columnTwo AS text), CAST(columnThree AS text), "
-                            + "CAST(columnFour AS text) FROM " + tName + ";";
-                    rs = statement.executeQuery(query);
+                    String query = String.format("""
+                            SELECT CAST(columnOne AS text),
+                                   CAST(columnTwo AS text),
+                                   CAST(columnThree AS text),
+                                   CAST(columnFour AS text)
+                            FROM %s;
+                            """, tName);
+                    statement = connection.prepareStatement(query);
+                    rs = statement.executeQuery();
 
                     while (rs.next()) {
                         text.append(rs.getString("columnOne")).append("\n");
@@ -86,9 +96,12 @@ public class Connect {
             }
             default -> {
                 try {
-                    statement = connection.createStatement();   // создаем Statement объект для отправки инструкций SQL в БД
-                    String query = "SELECT CAST(columnOne AS text) FROM " + tName + ";";
-                    rs = statement.executeQuery(query);
+                    String query = String.format("""
+                            SELECT CAST(columnOne AS text)
+                            FROM %s;
+                            """, tName);
+                    statement = connection.prepareStatement(query);
+                    rs = statement.executeQuery();
 
                     while (rs.next()) {
                         text.append(rs.getString("columnOne")).append("\n").append("\n");
