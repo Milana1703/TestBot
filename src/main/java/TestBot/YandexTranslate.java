@@ -3,11 +3,11 @@ package TestBot;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import TestBot.YandexAPIResponse.Translation;
 
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.util.List;
-import java.util.Objects;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.BufferedReader;
@@ -24,28 +24,26 @@ import java.nio.charset.StandardCharsets;
  *  ------
  *  private static String getTranslateText(StringBuilder t)
  *  public static String translate(String language, String text)
- *
  */
 
 public class YandexTranslate {
     private static final Gson gson = new Gson();
 
     /**
-     * Данный метод предназначен для получения значения из поля "text":
-     * при получении результата
+     * Получение значения из поля "text" при получении результата
      */
     private static String getTranslateText(StringBuilder t) {
         YandexAPIResponse response = gson.fromJson(t.toString(), YandexAPIResponse.class);
-        List<YandexAPIResponse.Translation> translations = response.getTranslations();
+        List<Translation> translations = response.getTranslations();
         StringBuilder resultText = new StringBuilder();
-        for (YandexAPIResponse.Translation translation : translations) {
+        for (Translation translation : translations) {
             resultText.append(translation.getText()).append(" ");
         }
         return resultText.deleteCharAt(resultText.length() - 1).toString();
     }
 
     /**
-     * метод предназначенный для перевода теста
+     * Перевод теста
      * @param languageTo - язык, НА который требуется перевести текст
      * @param text - текст, который требуется перевести
      * @return Возвращает переведённую строку (на русском) заданного текста
@@ -54,9 +52,6 @@ public class YandexTranslate {
         String urlAddress = "https://translate.api.cloud.yandex.net/translate/v2/translate";
         final String iAmToken = System.getenv("iAmToken");
         final String folderId = System.getenv("folderId");
-
-        OutputStream outputStream = null;
-        BufferedReader bufferedReader = null;
         String[] texts = text.split(" ");
 
         StringBuilder response = new StringBuilder();
@@ -77,33 +72,23 @@ public class YandexTranslate {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Authorization", "Bearer " + iAmToken);
 
-            outputStream = connection.getOutputStream();
-            byte[] input = body.toString().getBytes(StandardCharsets.UTF_8);
-            outputStream.write(input, 0, input.length);
+            try (OutputStream outputStream = connection.getOutputStream();
+                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                byte[] input = body.toString().getBytes(StandardCharsets.UTF_8);
+                outputStream.write(input, 0, input.length);
 
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                while ((inputLine = bufferedReader.readLine()) != null) {
-                    response.append(inputLine);
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    String inputLine;
+                    while ((inputLine = bufferedReader.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                } else {
+                    System.out.println("HTTP response code: " + responseCode);
                 }
-            } else {
-                System.out.println("HTTP response code: " + responseCode);
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                Objects.requireNonNull(bufferedReader).close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                Objects.requireNonNull(outputStream).close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return getTranslateText(response);
     }
