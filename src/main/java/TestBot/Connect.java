@@ -1,8 +1,27 @@
 package TestBot;
 
+import org.checkerframework.checker.units.qual.C;
+
 import java.sql.*;
 
 public class Connect {
+    // Statement — базовый класс, предназначеный для выполнения простых SQL-запросов без параметров
+    private PreparedStatement statement;
+    private final Connection connection;
+    public static final String QUERY = """
+                            SELECT description
+                            FROM enRules
+                            WHERE name = ?;
+                            """;
+    public Connect() {
+        this.connection = connectToDB();
+        try {
+            this.statement = connection.prepareStatement(QUERY);
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     public Connection connectToDB() {
 
         final String dbName = System.getenv("dbName");
@@ -26,27 +45,19 @@ public class Connect {
         return connect_object;
     }
 
-    public String readTable(Connection connection, String tName) {
-        // Statement — базовый класс, предназначеный для выполнения простых SQL-запросов без параметров
-        PreparedStatement statement;
-        ResultSet rs;    // ResultSet обеспечивает построчный доступ к результатам запросов
-
+    public String readTable(String tName) {
         String text = "";
 
         try {
-            String query = """
-                            SELECT description
-                            FROM enRules
-                            WHERE name = ?;
-                            """;
-            statement = connection.prepareStatement(query);
             statement.setString(1, tName);
-            rs = statement.executeQuery();
+
+            // ResultSet обеспечивает построчный доступ к результатам запросов
+            ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
                 text = rs.getString("description");
             }
-        } catch (Exception e){
+        } catch (SQLException e){
             System.out.println(e.getMessage());
         }
         return text;

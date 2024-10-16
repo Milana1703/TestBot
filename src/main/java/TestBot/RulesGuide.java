@@ -10,8 +10,7 @@ public class RulesGuide {
     }
 
     public SendMessage DB(SendMessage message, String tName){
-        java.sql.Connection con = connect.connectToDB();
-        String text = connect.readTable(con, tName);
+        String text = connect.readTable(tName);
         message.setText(text);
         return message;
     }

@@ -15,12 +15,17 @@ public class Main{
         TelegramBotsApi telegramBotsApi;
         try {  // пробуем зарегестрировать бота
             Gson gson = new Gson();
-            Connect connect = new Connect();
-            YandexTranslate yTranslate = new YandexTranslate(gson);
+
             Buttons buttons = new Buttons();
+            Connect connect = new Connect();
+
             RulesGuide rulesGuide = new RulesGuide(connect);
+            YandexTranslate yTranslate = new YandexTranslate(gson);
+
             telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+
             telegramBotsApi.registerBot(new DialogBot(yTranslate, new HashMap<>(), buttons, rulesGuide));  // botName, botToken
+
             System.out.println("Bot started! \uD83D\uDD25");
         } catch (TelegramApiException exc)        {
             throw new RuntimeException(exc);
