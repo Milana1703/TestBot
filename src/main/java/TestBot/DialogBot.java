@@ -21,10 +21,15 @@ public class DialogBot extends TelegramLongPollingBot {
     public final String botToken = System.getenv("botToken");
     private final YandexTranslate translator;
     private final HashMap<String, String> idTranslateMode;
+    private final Buttons buttons;
+    private final RulesGuide rulesGuide;
 
-    public DialogBot(YandexTranslate translator, HashMap<String, String> idTranslateMode) {
+
+    public DialogBot(YandexTranslate translator, HashMap<String, String> idTranslateMode, Buttons buttons, RulesGuide rulesGuide) {
         this.translator = translator;
         this.idTranslateMode = idTranslateMode;
+        this.buttons = buttons;
+        this.rulesGuide = rulesGuide;
     }
 
     @Override
@@ -40,13 +45,15 @@ public class DialogBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
 
         CallbackQuery callback = update.getCallbackQuery();
+
+
         System.out.print("hasCallbackQuery: " + update.hasCallbackQuery() + "\n");
         System.out.print(callback + "\n");
 
         SendMessage message = new SendMessage();   // Создаем обект-сообщение
 
         // кнопотьки
-        Buttons.buttonsReplyKeyboard(message);
+        buttons.buttonsReplyKeyboard(message);
 
         if (update.hasCallbackQuery()){
 
@@ -59,7 +66,7 @@ public class DialogBot extends TelegramLongPollingBot {
             System.out.print("callback_id: " + callback_id + "\n");
 
             try {
-                execute(RulesGuide.DB(message, callback_data));
+                execute(rulesGuide.DB(message, callback_data));
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
             }
@@ -131,7 +138,7 @@ public class DialogBot extends TelegramLongPollingBot {
                 if (message_text.equals("Rules")) {
                     try {
                     // то отправляем пользователю соответствующую встроенную клавиатуру
-                        execute(Buttons.rulesInlineKeyboard(chat_id));
+                        execute(buttons.rulesInlineKeyboard(chat_id));
                     } catch (TelegramApiException e) {
                         throw new RuntimeException(e);
                     }

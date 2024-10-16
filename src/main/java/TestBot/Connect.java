@@ -3,7 +3,7 @@ package TestBot;
 import java.sql.*;
 
 public class Connect {
-    public static Connection connectToDB() {
+    public Connection connectToDB() {
 
         final String dbName = System.getenv("dbName");
         final String dbUser = System.getenv("dbUser");
@@ -26,7 +26,7 @@ public class Connect {
         return connect_object;
     }
 
-    public static String readTable(Connection connection, String tName, Integer columnNumber) {
+    public String readTable(Connection connection, String tName, Integer columnNumber) {
         // Statement — базовый класс, предназначеный для выполнения простых SQL-запросов без параметров
         PreparedStatement statement;
         ResultSet rs;    // ResultSet обеспечивает построчный доступ к результатам запросов

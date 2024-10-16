@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 public class Buttons {
-    public static void buttonsReplyKeyboard(SendMessage message){
+    public void buttonsReplyKeyboard(SendMessage message){
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);  // подгоняем размер кнопочек
         replyKeyboardMarkup.setOneTimeKeyboard(true);  // оставляем кнопочки после их нажатия
@@ -45,7 +45,7 @@ public class Buttons {
         message.setReplyMarkup(replyKeyboardMarkup);
     }
 
-    public static SendMessage rulesInlineKeyboard (String chat_id) {
+    public SendMessage rulesInlineKeyboard (String chat_id) {
 
         SendMessage message = new SendMessage();   // создаем объект сообщения
         message.setChatId(chat_id);
@@ -102,12 +102,6 @@ public class Buttons {
         inlineButton10.setText("Future Perfect");
         inlineButton10.setCallbackData("futurePerfect");
 
-        List<InlineKeyboardButton> inlineRow5 = new ArrayList<>();
-
-        InlineKeyboardButton inlineButton11 = new InlineKeyboardButton();
-        inlineButton11.setText("Неправильные глаголы");
-        inlineButton11.setCallbackData("irregularVerbs");
-
         // добавляем кнопки в первый ряд в том порядке, какой нам необходим.
 
         inlineRow1.add(inlineButton1);
@@ -123,8 +117,6 @@ public class Buttons {
         inlineRow4.add(inlineButton8);
         inlineRow4.add(inlineButton9);
         inlineRow4.add(inlineButton10);
-
-        inlineRow5.add(inlineButton11);
 
         // адрес Интернет страницы устанавливается через setUrl(String s)
 
