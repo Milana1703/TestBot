@@ -1,7 +1,5 @@
 package TestBot;
 
-import org.checkerframework.checker.units.qual.C;
-
 import java.sql.*;
 
 public class Connect {
