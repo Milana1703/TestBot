@@ -26,91 +26,29 @@ public class Connect {
         return connect_object;
     }
 
-    public String readTable(Connection connection, String tName, Integer columnNumber) {
+    public String readTable(Connection connection, String tName) {
         // Statement — базовый класс, предназначеный для выполнения простых SQL-запросов без параметров
         PreparedStatement statement;
         ResultSet rs;    // ResultSet обеспечивает построчный доступ к результатам запросов
 
-        StringBuilder text = new StringBuilder();
+        String text = "";
 
-        switch (columnNumber) {
-            case 2 -> {
-                try {
-                    String query = String.format("""
-                            SELECT CAST(columnOne AS text),
-                                   CAST(columnTwo AS text)
-                            FROM %s;
-                            """, tName);
-                    statement = connection.prepareStatement(query);
-                    rs = statement.executeQuery();
+        try {
+            String query = """
+                            SELECT description
+                            FROM enRules
+                            WHERE name = ?;
+                            """;
+            statement = connection.prepareStatement(query);
+            statement.setString(1, tName);
+            rs = statement.executeQuery();
 
-                    while (rs.next()) {
-                        text.append(rs.getString("columnOne")).append("\n");
-                        text.append(rs.getString("columnTwo")).append("\n").append("\n");
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+            while (rs.next()) {
+                text = rs.getString("description");
             }
-            case 3 -> {
-                try {
-                    String query = String.format("""
-                            SELECT CAST(columnOne AS text),
-                                   CAST(columnTwo AS text),
-                                   CAST(columnThree AS text)
-                            FROM %s;
-                            """, tName);
-                    statement = connection.prepareStatement(query);
-                    rs = statement.executeQuery();
-
-                    while (rs.next()) {
-                        text.append(rs.getString("columnOne")).append("\n");
-                        text.append(rs.getString("columnTwo")).append("\n");
-                        text.append(rs.getString("columnThree")).append("\n").append("\n");
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-            case 4 -> {
-                try {
-                    String query = String.format("""
-                            SELECT CAST(columnOne AS text),
-                                   CAST(columnTwo AS text),
-                                   CAST(columnThree AS text),
-                                   CAST(columnFour AS text)
-                            FROM %s;
-                            """, tName);
-                    statement = connection.prepareStatement(query);
-                    rs = statement.executeQuery();
-
-                    while (rs.next()) {
-                        text.append(rs.getString("columnOne")).append("\n");
-                        text.append(rs.getString("columnTwo")).append("\n");
-                        text.append(rs.getString("columnThree")).append("\n");
-                        text.append(rs.getString("columnFour")).append("\n").append("\n");
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-            default -> {
-                try {
-                    String query = String.format("""
-                            SELECT CAST(columnOne AS text)
-                            FROM %s;
-                            """, tName);
-                    statement = connection.prepareStatement(query);
-                    rs = statement.executeQuery();
-
-                    while (rs.next()) {
-                        text.append(rs.getString("columnOne")).append("\n").append("\n");
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-            }
+        } catch (Exception e){
+            System.out.println(e.getMessage());
         }
-        return text.toString();
+        return text;
     }
 }
